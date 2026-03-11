@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- css -->
+ <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
+ <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.css">
+ <link rel="stylesheet" href="style.css">
+<!-- js -->
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+ <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+ <script src="main.js"></script>
+<!-- nav -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube</title>
+    <style>
+           .slide-items {
+        width: 100%;
+        display: flex;
+        max-width: 80%;
+        margin: auto;
+    }
+
+    .slide-items li {
+        height: auto;
+        margin-right: 10px;
+        margin-left:10px;
+    }
+    .slide-items img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .slick-prev:before,
+    .slick-next:before {
+        color: black;
+    }
+    .slick-dots li button:before {
+        font-size: 18px;
+        top:6px;
+    }
+
+    body {
+        background: white;
+    }
+
+    a {
+      color: #000000;
+      text-decoration: none;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+    }
+
+    .item {
+      flex: 0 0 calc(33.333% - 20px);
+      margin: 10px;
+      }
+
+    /* make images scale within items */
+    .item img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* responsive adjustments for smaller screens */
+    @media (max-width: 768px) {
+      .wrapper {
+        flex-direction: column;
+        align-items: center;
+      }
+      .item {
+        flex: 1 1 90%;
+      }
+    }
+    </style>
+</head>
+<body>
+     <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a href="intro.html" class="navbar-brand">ナビ</a>
+        <div class="collapse navbar-collapse">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" href="youtube.html">home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="test1.html">demo1</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">demo2</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">demo3</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+      crossorigin="anonymous"></script>
+
+    <center><h1>PICK UP</h1></center>
+    <ul class="slide-items">
+        <a href="https://www.youtube.com/watch?v=W4cXkI7n_d8&list=PLwXThI6tvcnLffP-bD1CnrL-vTiAOrzWF"><img src = "images/一宮興道.jpg" alt = "一宮興道" ></a>
+        <a href="https://www.youtube.com/watch?v=MyMBjWp_v6o&list=PLwXThI6tvcnKhSuwk_eVFrW4xeEm8WQK1"><img src = "images/一宮西.jpg" alt = "一宮西" ></a>
+        <a href="https://www.youtube.com/watch?v=VS6RdAIX_I8&list=PLwXThI6tvcnLBIg2cUr9OBA3iUbDmRxSD"><img src = "images/一宮南.jpg" alt = "一宮南" ></a>
+        <a href="https://www.youtube.com/watch?v=W4cXkI7n_d8&list=PLwXThI6tvcnLffP-bD1CnrL-vTiAOrzWF"><img src = "images/一宮興道.jpg" alt = "一宮興道" ></a>
+        <a href="https://www.youtube.com/watch?v=MyMBjWp_v6o&list=PLwXThI6tvcnKhSuwk_eVFrW4xeEm8WQK1"><img src = "images/一宮西.jpg" alt = "一宮西" ></a>
+        <a href="https://www.youtube.com/watch?v=VS6RdAIX_I8&list=PLwXThI6tvcnLBIg2cUr9OBA3iUbDmRxSD"><img src = "images/一宮南.jpg" alt = "一宮南" ></a>
+    </ul>
+    <section id="NEW ARRIVAL">
+      <center><h1>一覧</h1></center>
+      <div class="wrapper">
+      <div class="item">
+        <a href="https://www.youtube.com/watch?v=VS6RdAIX_I8&list=PLwXThI6tvcnLBIg2cUr9OBA3iUbDmRxSD"><img src="images/一宮南.jpg" alt="一宮南" style="width: 100%;"></a>
+      </div>
+      <div class="item">
+        <a href="https://www.youtube.com/watch?v=W4cXkI7n_d8&list=PLwXThI6tvcnLffP-bD1CnrL-vTiAOrzWF"><img src="images/一宮興道.jpg" alt="一宮興道" style="width: 100%;"></a>
+      </div>
+      <div class="item">
+        <a href="https://www.youtube.com/watch?v=MyMBjWp_v6o&list=PLwXThI6tvcnKhSuwk_eVFrW4xeEm8WQK1"><img src="images/一宮西.jpg" alt="一宮西" style="width: 100%;"></a>
+      </div>
+      </div>
+    </section>
+    
+    
+
+
+</body>
+<script>
+    $(".slide-items").slick({
+        autoplay: true,
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        infinite: true,
+    });
+</script>
