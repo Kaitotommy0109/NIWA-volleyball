@@ -15,6 +15,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <title>YouTube</title>
     <style>
            .slide-items {
@@ -137,7 +138,15 @@
       </div>
       </div>
     </section>
-    
+  <script>
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+      if (!user) {
+        window.netlifyIdentity.open();
+      }
+    });
+  }
+</script>    
     
 
 
