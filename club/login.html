@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Login</title>
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            form {
+                width: 500px;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+        </style>
+    </head>
+    <body>
+        <form id="loginForm">
+            <h2>Login</h2>
+            <input type="text" placeholder="Username" required id="username" >
+            <input type="password" placeholder="Password" required id="password" >
+            <button type="submit">Login</button>
+            &nbsp; <a href="register.html">Go to Register</a>
+        </form>
+
+        <script>
+            // IndexedDB初期化
+            function openDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open('LoginDB', 1);
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        if (!db.objectStoreNames.contains('users')) {
+                            db.createObjectStore('users', { keyPath: 'username' });
+                        }
+                    };
+                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            }
+
+            // ユーザー登録
+            async function registerUser(username, password) {
+                const db = await openDB();
+                const transaction = db.transaction(['users'], 'readwrite');
+                const store = transaction.objectStore('users');
+                const user = { username, password };
+                store.add(user);
+                return new Promise((resolve, reject) => {
+                    transaction.oncomplete = () => resolve();
+                    transaction.onerror = () => reject(transaction.error);
+                });
+            }
+
+            // ログイン検証
+            async function loginUser(username, password) {
+                const db = await openDB();
+                const transaction = db.transaction(['users'], 'readonly');
+                const store = transaction.objectStore('users');
+                const request = store.get(username);
+                return new Promise((resolve, reject) => {
+                    request.onsuccess = () => {
+                        const user = request.result;
+                        if (user && user.password === password) {
+                            resolve(user);
+                        } else {
+                            resolve(null);
+                        }
+                    };
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            // フォーム送信ハンドラ
+            document.getElementById('loginForm').addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const user = await loginUser(username, password);
+                if (user) {
+                    localStorage.setItem('user', JSON.stringify(user));
+                    window.location.href = '../index.html';
+                } else {
+                    alert('Incorrect username or password');
+                }
+            });
+
+            // 登録ボタンハンドラ
+            document.getElementById('registerBtn').addEventListener('click', async function () {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                if (username && password) {
+                    try {
+                        await registerUser(username, password);
+                        alert('User registered successfully');
+                    } catch (error) {
+                        alert('Registration failed: ' + error.message);
+                    }
+                } else {
+                    alert('Please enter username and password');
+                }
+            });
+        </script>
+    </body>
+</html>
