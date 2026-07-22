@@ -9,6 +9,17 @@
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
  <script src="main.js"></script>
+ <script>
+  if (sessionStorage.getItem(`isLogged`) !== "true") {
+    alert(`アクセス権限がありません。ログインしてください。`);
+    window.location.href = "club/login.html";
+} else {
+  document.addEventListener("DOMContentLoaded", function() {
+    document.body.style.display = "block";
+  });
+}
+
+</script>
 <!-- nav -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
   integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
@@ -22,6 +33,8 @@
         display: flex;
         max-width: 80%;
         margin: auto;
+        height: auto;
+        
     }
 
     .slide-items li {
@@ -46,6 +59,7 @@
 
     body {
         background: white;
+        
     }
 
     a {
@@ -86,6 +100,26 @@
         flex: 1 1 90%;
       }
     }
+    .player {
+      width: 100%;
+      height: 100px;
+      background-color: gray;
+      text-align: center;
+    }
+
+    .calendar {
+      width: 100%;
+      height: 35%;
+      background-color: #87cefa;
+      text-align: center;
+    }
+
+    .tournament {
+      width: 100%;
+      height: 35%;
+      background-color: #99dfbe;
+      text-align: center;
+    }
     </style>
 </head>
 <body>
@@ -114,14 +148,31 @@
       integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
       crossorigin="anonymous"></script>
 
+    <img src = "club/images/サムネ.png" alt = "サムネ" style="width: 100%; height: auto;">
+    <div style="text-align: center;">
+      <video src="club/videos/2026年度男子バレーボール部部活動紹介動画.mp4" controls style="width: 50%; height: auto;" autoplay muted controls loop></video>
+    </div>
+    <div class="player">
+      <h1><font color="white">部員人数<br>2年23人、1年12人</font></h1>
+    </div>
+
+    <div class="calendar">
+      <h1><font color="white">予定表</font></h1>
+      <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Asia%2FTokyo&showPrint=0&src=bml3YS52b2xsZXliYWxsQGdtYWlsLmNvbQ&src=amEuamFwYW5lc2UjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23039be5&color=%230b8043&mode=AGENDA" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+    </div>
+
+    <div class="tournament">
+      <img src = "club/images/トーナメント.jpg" alt = "トーナメント" style="width: 20%; height: auto;">
+    </div>
+
     <center><h1>PICK UP</h1></center>
     <ul class="slide-items">
-        <a href="https://www.youtube.com/watch?v=W4cXkI7n_d8&list=PLwXThI6tvcnLffP-bD1CnrL-vTiAOrzWF"><img src = "club/images/一宮興道.jpg" alt = "一宮興道" ></a>
-        <a href="https://www.youtube.com/watch?v=MyMBjWp_v6o&list=PLwXThI6tvcnKhSuwk_eVFrW4xeEm8WQK1"><img src = "club/images/一宮西.jpg" alt = "一宮西" ></a>
-        <a href="https://www.youtube.com/watch?v=VS6RdAIX_I8&list=PLwXThI6tvcnLBIg2cUr9OBA3iUbDmRxSD"><img src = "club/images/一宮南.jpg" alt = "一宮南" ></a>
-        <a href="https://www.youtube.com/watch?v=W4cXkI7n_d8&list=PLwXThI6tvcnLffP-bD1CnrL-vTiAOrzWF"><img src = "club/images/一宮興道.jpg" alt = "一宮興道" ></a>
-        <a href="https://www.youtube.com/watch?v=MyMBjWp_v6o&list=PLwXThI6tvcnKhSuwk_eVFrW4xeEm8WQK1"><img src = "club/images/一宮西.jpg" alt = "一宮西" ></a>
-        <a href="https://www.youtube.com/watch?v=VS6RdAIX_I8&list=PLwXThI6tvcnLBIg2cUr9OBA3iUbDmRxSD"><img src = "club/images/一宮南.jpg" alt = "一宮南" ></a>
+        <a height="300px" href="https://www.youtube.com/watch?v=W4cXkI7n_d8&list=PLwXThI6tvcnLffP-bD1CnrL-vTiAOrzWF"><img src = "club/images/一宮興道.jpg" alt = "一宮興道" ></a>
+        <a height="300px" href="https://www.youtube.com/watch?v=MyMBjWp_v6o&list=PLwXThI6tvcnKhSuwk_eVFrW4xeEm8WQK1"><img src = "club/images/一宮西.jpg" alt = "一宮西" ></a>
+        <a height="300px" href="https://www.youtube.com/watch?v=VS6RdAIX_I8&list=PLwXThI6tvcnLBIg2cUr9OBA3iUbDmRxSD"><img src = "club/images/一宮南.jpg" alt = "一宮南" ></a>
+        <a height="300px" href="https://www.youtube.com/watch?v=W4cXkI7n_d8&list=PLwXThI6tvcnLffP-bD1CnrL-vTiAOrzWF"><img src = "club/images/一宮興道.jpg" alt = "一宮興道" ></a>
+        <a height="300px" href="https://www.youtube.com/watch?v=MyMBjWp_v6o&list=PLwXThI6tvcnKhSuwk_eVFrW4xeEm8WQK1"><img src = "club/images/一宮西.jpg" alt = "一宮西" ></a>
+        <a height="300px" href="https://www.youtube.com/watch?v=VS6RdAIX_I8&list=PLwXThI6tvcnLBIg2cUr9OBA3iUbDmRxSD"><img src = "club/images/一宮南.jpg" alt = "一宮南" ></a>
     </ul>
     <section id="NEW ARRIVAL">
       <center><h1>一覧</h1></center>
@@ -138,12 +189,13 @@
       </div>
     </section>   
 
-</body>
-<script>
-    $(".slide-items").slick({
+    <script>
+         $(".slide-items").slick({
         autoplay: true,
         slidesToShow: 3,
         slidesToScroll: 1,
         infinite: true,
     });
-</script>
+  </script>
+</body>
+
