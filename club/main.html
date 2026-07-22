@@ -1,63 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- css -->
- <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.css">
- <link rel="stylesheet" href="style.css">
-<!-- js -->
- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
- <script src="main.js"></script>
- <script>
-  if (sessionStorage.getItem(`isLogged`) !== "true") {
-    alert(`アクセス権限がありません。ログインしてください。`);
-    window.location.href = "../index.html";
-} else {
-  document.addEventListener("DOMContentLoaded", function() {
-    document.body.style.display = "block";
-  });
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube</title>
 
-</script>
-<!-- nav -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-  integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube</title>
-    <style>
-    .slide-items {
-        width: 100%;
-        max-width: 80%;
-        margin: 0 auto;
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+  <script>
+    if (sessionStorage.getItem('isLogged') !== 'true') {
+      alert('アクセス権限がありません。ログインしてください。');
+      window.location.href = '../index.html';
+    }
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: white;
+      font-family: sans-serif;
+    }
+    img, video, iframe { max-width: 100%; }
+
+    .top-banner {
+      width: 100%;
+      height: auto;
+      display: block;
     }
 
-    .slide-items li {
-        margin: 0 10px;
+    .video-wrap {
+      text-align: center;
+      padding: 12px;
+    }
+
+    .video-wrap video {
+      width: min(100%, 600px);
+      height: auto;
+      display: inline-block;
+    }
+
+    .player {
+      width: 100%;
+      min-height: 100px;
+      background-color: gray;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .player h1 {
+      margin: 0;
+      font-size: clamp(1.25rem, 2.5vw, 2rem);
+      color: white;
+    }
+
+    .calendar {
+      width: 100%;
+      background-color: #87cefa;
+      text-align: center;
+      padding: 16px 12px;
+    }
+
+    .calendar iframe {
+      width: min(100%, 800px);
+      height: clamp(420px, 60vh, 600px);
+      max-width: 100%;
+      border: 0;
+    }
+
+    .tournament {
+      width: 100%;
+      background-color: #99dfbe;
+      text-align: center;
+      padding: 16px 12px;
+    }
+
+    .tournament img {
+      width: min(100%, 280px);
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .slide-items {
+      width: 100%;
+      max-width: 90%;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .slide-items .slick-slide {
+      padding: 0 8px;
+    }
+
+    .slide-items a {
+      display: block;
     }
 
     .slide-items img {
-        width: 100%;
-        height: 250px;
-        object-fit: cover;
-        display: block;
-        border-radius: 8px;
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      display: block;
+      border-radius: 8px;
     }
 
     .slick-prev:before,
     .slick-next:before {
-        color: black;
-    }
-    .slick-dots li button:before {
-        font-size: 18px;
-        top:6px;
+      color: black;
     }
 
-    body {
-        background: white;
-        
+    .slick-dots li button:before {
+      font-size: 18px;
+      top: 6px;
+    }
+
+    .wrapper {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+      padding: 0 12px;
+    }
+
+    .item img {
+      width: 100%;
+      height: auto;
+      display: block;
     }
 
     a {
@@ -70,144 +143,107 @@
       padding: 0;
     }
 
-    .wrapper {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-    }
-
-    .item {
-      flex: 0 0 calc(33.333% - 20px);
-      margin: 10px;
-      }
-
-    /* make images scale within items */
-    .item img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    /* responsive adjustments for smaller screens */
     @media (max-width: 768px) {
       .wrapper {
-        flex-direction: column;
-        align-items: center;
+        grid-template-columns: 1fr;
       }
-      .item {
-        flex: 1 1 90%;
+
+      .slide-items {
+        max-width: 92%;
+      }
+
+      .calendar iframe {
+        height: 420px;
       }
     }
-    .player {
-      width: 100%;
-      height: 100px;
-      background-color: gray;
-      text-align: center;
-    }
-
-    .calendar {
-      width: 100%;
-      height: 35%;
-      background-color: #87cefa;
-      text-align: center;
-    }
-
-    .tournament {
-      width: 100%;
-      height: 35%;
-      background-color: #99dfbe;
-      text-align: center;
-    }
-    </style>
+  </style>
 </head>
 <body>
-     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container-fluid">
-        <a href="intro.html" class="navbar-brand">ナビ</a>
-        <div class="collapse navbar-collapse">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link active" href="youtube.html">home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="test1.html">demo1</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">demo2</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">demo3</a>
-            </li>
-          </ul>
-        </div>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a href="intro.html" class="navbar-brand">ナビ</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link active" href="youtube.html">home</a></li>
+          <li class="nav-item"><a class="nav-link" href="test1.html">demo1</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">demo2</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">demo3</a></li>
+        </ul>
       </div>
-    </nav>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
-      crossorigin="anonymous"></script>
-
-    <img src = "images/サムネ.png" alt = "サムネ" style="width: 100%; height: auto;">
-    <div style="text-align: center;">
-      <video src="videos/2026年度男子バレーボール部部活動紹介動画.mp4" controls style="width: 50%; height: auto;" autoplay muted controls loop></video>
     </div>
-    <div class="player">
-      <h1><font color="white">部員人数<br>2年23人、1年12人</font></h1>
-    </div>
+  </nav>
 
-    <div class="calendar">
-      <h1><font color="white">予定表</font></h1>
-      <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Asia%2FTokyo&showPrint=0&src=bml3YS52b2xsZXliYWxsQGdtYWlsLmNvbQ&src=amEuamFwYW5lc2UjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23039be5&color=%230b8043&mode=AGENDA" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
-    </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
 
-    <div class="tournament">
-      <img src = "images/トーナメント.jpg" alt = "トーナメント" style="width: 20%; height: auto;">
-    </div>
+  <img src="images/サムネ.png" alt="サムネ" class="top-banner">
 
-    <center><h1>PICK UP</h1></center>
-    <ul class="slide-items">
-        <li><a href="https://www.youtube.com/watch?v=W4cXkI7n_d8&list=PLwXThI6tvcnLffP-bD1CnrL-vTiAOrzWF"><img src="images/一宮興道.jpg" alt="一宮興道"></a></li>
-        <li><a href="https://www.youtube.com/watch?v=MyMBjWp_v6o&list=PLwXThI6tvcnKhSuwk_eVFrW4xeEm8WQK1"><img src="images/一宮西.jpg" alt="一宮西"></a></li>
-        <li><a href="https://www.youtube.com/watch?v=VS6RdAIX_I8&list=PLwXThI6tvcnLBIg2cUr9OBA3iUbDmRxSD"><img src="images/一宮南.jpg" alt="一宮南"></a></li>
-        <li><a href="https://www.youtube.com/watch?v=W4cXkI7n_d8&list=PLwXThI6tvcnLffP-bD1CnrL-vTiAOrzWF"><img src="images/一宮興道.jpg" alt="一宮興道"></a></li>
-        <li><a href="https://www.youtube.com/watch?v=MyMBjWp_v6o&list=PLwXThI6tvcnKhSuwk_eVFrW4xeEm8WQK1"><img src="images/一宮西.jpg" alt="一宮西"></a></li>
-        <li><a href="https://www.youtube.com/watch?v=VS6RdAIX_I8&list=PLwXThI6tvcnLBIg2cUr9OBA3iUbDmRxSD"><img src="images/一宮南.jpg" alt="一宮南"></a></li>
-    </ul>
-    <section id="NEW ARRIVAL">
-      <center><h1>一覧</h1></center>
-      <div class="wrapper">
+  <div class="video-wrap">
+    <video src="videos/2026年度男子バレーボール部部活動紹介動画.mp4" controls autoplay muted loop></video>
+  </div>
+
+  <div class="player">
+    <h1>部員人数<br>2年23人、1年12人</h1>
+  </div>
+
+  <div class="calendar">
+    <h1><font color="white">予定表</font></h1>
+    <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Asia%2FTokyo&showPrint=0&src=bml3YS52b2xsZXliYWxsQGdtYWlsLmNvbQ&src=amEuamFwYW5lc2UjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23039be5&color=%230b8043&mode=AGENDA" scrolling="no"></iframe>
+  </div>
+
+  <div class="tournament">
+    <img src="images/トーナメント.jpg" alt="トーナメント">
+  </div>
+
+  <center><h1>PICK UP</h1></center>
+  <div class="slide-items">
+    <div><a href="https://www.youtube.com/watch?v=W4cXkI7n_d8&list=PLwXThI6tvcnLffP-bD1CnrL-vTiAOrzWF"><img src="images/一宮興道.jpg" alt="一宮興道"></a></div>
+    <div><a href="https://www.youtube.com/watch?v=MyMBjWp_v6o&list=PLwXThI6tvcnKhSuwk_eVFrW4xeEm8WQK1"><img src="images/一宮西.jpg" alt="一宮西"></a></div>
+    <div><a href="https://www.youtube.com/watch?v=VS6RdAIX_I8&list=PLwXThI6tvcnLBIg2cUr9OBA3iUbDmRxSD"><img src="images/一宮南.jpg" alt="一宮南"></a></div>
+    <div><a href="https://www.youtube.com/watch?v=W4cXkI7n_d8&list=PLwXThI6tvcnLffP-bD1CnrL-vTiAOrzWF"><img src="images/一宮興道.jpg" alt="一宮興道"></a></div>
+    <div><a href="https://www.youtube.com/watch?v=MyMBjWp_v6o&list=PLwXThI6tvcnKhSuwk_eVFrW4xeEm8WQK1"><img src="images/一宮西.jpg" alt="一宮西"></a></div>
+    <div><a href="https://www.youtube.com/watch?v=VS6RdAIX_I8&list=PLwXThI6tvcnLBIg2cUr9OBA3iUbDmRxSD"><img src="images/一宮南.jpg" alt="一宮南"></a></div>
+  </div>
+
+  <section id="NEW ARRIVAL">
+    <center><h1>一覧</h1></center>
+    <div class="wrapper">
       <div class="item">
-        <a href="https://www.youtube.com/watch?v=VS6RdAIX_I8&list=PLwXThI6tvcnLBIg2cUr9OBA3iUbDmRxSD"><img src="images/一宮南.jpg" alt="一宮南" style="width: 100%;"></a>
+        <a href="https://www.youtube.com/watch?v=VS6RdAIX_I8&list=PLwXThI6tvcnLBIg2cUr9OBA3iUbDmRxSD"><img src="images/一宮南.jpg" alt="一宮南"></a>
       </div>
       <div class="item">
-        <a href="https://www.youtube.com/watch?v=W4cXkI7n_d8&list=PLwXThI6tvcnLffP-bD1CnrL-vTiAOrzWF"><img src="images/一宮興道.jpg" alt="一宮興道" style="width: 100%;"></a>
+        <a href="https://www.youtube.com/watch?v=W4cXkI7n_d8&list=PLwXThI6tvcnLffP-bD1CnrL-vTiAOrzWF"><img src="images/一宮興道.jpg" alt="一宮興道"></a>
       </div>
       <div class="item">
-        <a href="https://www.youtube.com/watch?v=MyMBjWp_v6o&list=PLwXThI6tvcnKhSuwk_eVFrW4xeEm8WQK1"><img src="images/一宮西.jpg" alt="一宮西" style="width: 100%;"></a>
+        <a href="https://www.youtube.com/watch?v=MyMBjWp_v6o&list=PLwXThI6tvcnKhSuwk_eVFrW4xeEm8WQK1"><img src="images/一宮西.jpg" alt="一宮西"></a>
       </div>
-      </div>
-    </section>   
+    </div>
+  </section>
 
-    <script>
-    $(document).ready(function () {
-        $(".slide-items").slick({
-            autoplay: true,
-            autoplaySpeed: 3000,
-            slidesToShow: 3,
-            slidesToScroll: 1,
-            infinite: true,
-            arrows: true,
-            dots: true,
-            responsive: [
-                {
-                    breakpoint: 768,
-                    settings: {
-                        slidesToShow: 1,
-                        arrows: false
-                    }
-                }
-            ]
-        });
+  <script>
+    $(window).on('load', function () {
+      $('.slide-items').not('.slick-initialized').slick({
+        autoplay: true,
+        autoplaySpeed: 3000,
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        infinite: true,
+        arrows: true,
+        dots: true,
+        pauseOnHover: true,
+        responsive: [
+          {
+            breakpoint: 768,
+            settings: {
+              slidesToShow: 1,
+              arrows: false,
+              dots: true
+            }
+          }
+        ]
+      });
     });
   </script>
 </body>
-
+</html>
