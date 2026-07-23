@@ -18,22 +18,34 @@
     <body>
         <form id="loginForm">
             <h2>Login</h2>
-            <input type="password" placeholder="Password" required id="password" >
+            <input type="text" placeholder="Username" required id="username">
+            <input type="password" placeholder="Password" required id="password">
             <button type="submit">Login</button>
         </form>
 
         <script>
             document.getElementById('loginForm').addEventListener('submit', async function (event) {
                 event.preventDefault();
+
+                const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
-                const correctPassword = '123abc';
-                if (password === correctPassword) {
-                    sessionStorage.setItem('isLogged', 'true');
-                    window.location.href = 'club/main.html';
-                } else {
-                    alert('パスワードが違います。');
+
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    alert(result.error || 'ログインに失敗しました。');
+                    return;
                 }
 
+                window.location.href = 'club/main.html';
             });
         </script>
     </body>
