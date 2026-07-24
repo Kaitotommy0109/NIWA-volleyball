@@ -13,17 +13,10 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
   <script>
-    async function checkAuth() {
-      const response = await fetch('/api/checkAuth');
-      const result = await response.json();
-
-      if (!response.ok || !result.authenticated) {
-        alert('アクセス権限がありません。ログインしてください。');
-        window.location.href = '../index.html';
-      }
+    if (sessionStorage.getItem('isLogged') !== 'true') {
+      alert('アクセス権限がありません。ログインしてください。');
+      window.location.href = '../index.html';
     }
-
-    checkAuth();
   </script>
 
   <style>
