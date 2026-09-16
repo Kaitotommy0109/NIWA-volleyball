@@ -220,21 +220,125 @@
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
   }
+  .menu-wrapper {
+  position: relative;
+}
+
+.menu-icon {
+  width: 40px;
+  height: 30px;
+  position: fixed; /* ← fixedにして常に左上固定 */
+  top: 20px;
+  left: 20px;
+  cursor: pointer;
+  z-index: 3;
+  display: inline-block;
+}
+
+.menu-icon span {
+  display: block;
+  height: 4px;
+  margin: 6px 0;
+  background: #333;
+  border-radius: 2px;
+  transition: 0.4s;
+}
+
+/* ハンバーガーがXに変形 */
+#menu-toggle:checked + .menu-icon span:nth-child(1) {
+  transform: translateY(10px) rotate(45deg);
+}
+#menu-toggle:checked + .menu-icon span:nth-child(2) {
+  opacity: 0;
+}
+#menu-toggle:checked + .menu-icon span:nth-child(3) {
+  transform: translateY(-10px) rotate(-45deg);
+}
+
+/* オーバーレイ背景 */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.4s;
+  z-index: 1;
+}
+
+#menu-toggle:checked ~ .overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* メニュー本体（左から出す） */
+.menu {
+  position: fixed;
+  top: 0;
+  left: -250px; /* ← 初期位置を左へ */
+  width: 250px;
+  height: 100%;
+  background: #fff;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+  transition: left 0.4s ease;
+  z-index: 2;
+}
+
+#menu-toggle:checked ~ .menu {
+  left: 0; /* ← 開いたときは左0へ */
+}
+
+.menu ul {
+  list-style: none;
+  padding: 60px 20px;
+}
+
+.menu li {
+  margin: 20px 0;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #333;
+  font-size: 1.2rem;
+  transition: color 0.3s;
+}
+
+.menu a:hover {
+  color: #007bff;
+}
+.label {
+  color: #fffefe;
+}
+
   </style>
 </head>
 <body>
-  <header class="header stickyHeader">
-    <input type="button" value="トップへ戻る" onclick="window.scrollTo(0, 0);">
-    <input type="button" value="予定表" onclick="window.scrollTo(0, 1500);">
-    <input type="button" value="大会情報" onclick="window.scrollTo(0, 2000);">
-    <input type="button" value="動画一覧" onclick="window.scrollTo(0, 3500);">
-  </header>
+<div class="menu-wrapper">
+  <input type="checkbox" id="menu-toggle" hidden>
 
+  <label class="menu-icon" for="menu-toggle">
+    <span></span>
+    <span></span>
+    <span></span>
+  </label>
+  
+  <div class="overlay"></div>
+  
+  <nav class="menu">
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#calendar">Calendar</a></li>
+      <li><a href="#tournament">Tournament</a></li>
+      <li><a href="#game">Game</a></li>
+    </ul>
+  </nav>
+</div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
     crossorigin="anonymous"></script>
 
-  <img src="images/サムネ.png" alt="サムネ" class="top-banner">
+  <img src="images/サムネ.png" alt="サムネ" class="top-banner" id = "home">
 
   <div class="video-wrap">
     <video src="videos/2026年度男子バレーボール部部活動紹介動画.mp4" controls autoplay muted loop></video>
@@ -244,12 +348,12 @@
     <h1 class = scroller>部員人数<br>2年21人、1年10人、マネージャー2人</h1>
   </div>
 
-  <div class="calendar">
+  <div class="calendar" id = "calendar">
     <h1 class = "scroller"><font color="white">予定表</font></h1>
     <iframe class = "scroller" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Asia%2FTokyo&showPrint=0&src=bml3YS52b2xsZXliYWxsQGdtYWlsLmNvbQ&src=amEuamFwYW5lc2UjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23039be5&color=%230b8043&mode=AGENDA" scrolling="no"></iframe>
   </div>
 
-  <div class="tournament">
+  <div class="tournament" id = "tournament">
     <h1><font color="white">直近の大会情報</font></h1>
     <a href="images/トーナメント.jpg" target="_blank"><img src="images/トーナメント.jpg" width="300" alt="トーナメント" border="0"></a>
   </div>
@@ -278,7 +382,7 @@
     </div>
   </div>
 
-  <div class="item scroller">
+  <div class="item scroller" id = "game">
     <a href="https://www.youtube.com/playlist?list=PLdTqnyWJUhdQ"><img src="images/五条.png" alt="五条"></a>
 
     <div class="item-content">
@@ -340,7 +444,7 @@
     },
   
     start: "top center",
-    markers: true
+    markers: false
         // デバッグ用のマーカーを表示する場合は有効にする
   });
   </script>

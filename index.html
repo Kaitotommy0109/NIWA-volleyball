@@ -1,26 +1,107 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
     <head>
+        <!-- 1. スマホで正しく表示させるための必須タグ -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Login</title>
         <style>
+            /* 全体の余白リセットとフォント指定 */
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
             body {
                 display: flex;
-                justify-content: center;
-                align-items: center;
+                flex-direction: column; 
+                align-items: center;     /* 左右中央 */
+                justify-content: center;/* 上下中央 */
+                min-height: 100vh;
+                background-color: #f5f5f5; /* 背景に少し色をつけるとカードが見やすい */
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                padding: 20px; /* スマホで画面端にくっつきすぎないように余白を確保 */
             }
+
+            #header {
+                text-align: center;
+                margin-bottom: 24px;
+            }
+
+            #header h1 {
+                font-size: 1.5rem; /* スマホで見やすい大きさに調整 */
+                color: #333;
+            }
+
+            /* 2. 幅を可変にして画面からはみ出さないようにする */
             form {
-                width: 500px;
-                padding: 20px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                width: 100%;
+                max-width: 400px; /* PCなど大きい画面での最大幅 */
+                padding: 28px 20px;
+                background-color: #ffffff;
+                border-radius: 12px; /* 角丸をつけるとスマホアプリっぽくなります */
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+
+            form h2 {
+                margin-bottom: 20px;
+                text-align: center;
+                font-size: 1.3rem;
+                color: #333;
+            }
+
+            /* 3 & 4. タップしやすく、ズームされないように調整 */
+            input {
+                width: 100%;
+                margin-bottom: 16px;
+                padding: 12px 14px;
+                font-size: 16px; /* iPhoneで自動ズームしないように16px以上 */
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                outline: none;
+            }
+
+            input:focus {
+                border-color: #007bff; /* 入力中の線を分かりやすく */
+            }
+
+            /* 5. 押しやすいボタンデザイン */
+            button {
+                width: 100%;
+                padding: 12px;
+                font-size: 16px;
+                font-weight: bold;
+                color: #fff;
+                background-color: #007bff;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+
+            button:active {
+                background-color: #0056b3; /* タップした時に色が変化 */
+            }
+
+            img {
+                max-width: 100%;
+                height: auto;
             }
         </style>
     </head>
     <body>
-        <form id="loginForm">
-            <h2>Login</h2>
-            <input type="password" placeholder="Password" required id="password" >
-            <button type="submit">Login</button>
-        </form>
+        <div id="header">
+            <h1>NIWA Volleyball Club</h1>
+        </div>
+        <div id="input">
+            <form id="loginForm">
+                <h2>Login</h2>
+                <input type="password" placeholder="Password" required id="password">
+                <button type="submit">ログイン</button>
+            </form>
+        </div>
+        <div id="photo">
+            <img src="club/images/メンバー.jpg" alt="">
+        </div>
 
         <script>
             document.getElementById('loginForm').addEventListener('submit', async function (event) {
@@ -33,7 +114,6 @@
                 } else {
                     alert('パスワードが違います。');
                 }
-
             });
         </script>
     </body>
