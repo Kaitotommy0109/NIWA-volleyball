@@ -89,18 +89,22 @@
       background-color: #99dfbe;
       text-align: center;
       padding: 16px 12px;
+      display: block;
     }
 
     .tournament img {
       width: min(100%, 280px);
       height: auto;
-      display: block;
+      display: flex;
       margin: 0 auto;
     }
 
+    .tournament-g {
+      display: flex;
+    }
     .slide-items {
       width: 100%;
-      max-width: 90%;
+      max-width: 100%;
       margin: 0 auto;
       overflow: hidden;
     }
@@ -115,11 +119,12 @@
 
     .slide-items img {
       width: 100%;
-      height: 250px;
       object-fit: cover;
       display: block;
       border-radius: 8px;
     }
+
+   
 
     .slick-prev:before,
     .slick-next:before {
@@ -166,7 +171,7 @@
     }
 
       .slide-items {
-        max-width: 92%;
+        max-width: 100%;
       }
 
       .calendar iframe {
@@ -227,9 +232,9 @@
 .menu-icon {
   width: 40px;
   height: 30px;
-  position: fixed; /* ← fixedにして常に左上固定 */
+  position: fixed; /* 固定位置 */
   top: 20px;
-  left: 20px;
+  right: 20px;
   cursor: pointer;
   z-index: 3;
   display: inline-block;
@@ -271,21 +276,21 @@
   pointer-events: auto;
 }
 
-/* メニュー本体（左から出す） */
+/* メニュー本体（右から出す） */
 .menu {
   position: fixed;
   top: 0;
-  left: -250px; /* ← 初期位置を左へ */
+  right: -250px; /* 初期位置を右へ */
   width: 250px;
   height: 100%;
   background: #fff;
-  box-shadow: 2px 0 8px rgba(0,0,0,0.2);
-  transition: left 0.4s ease;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+  transition: right 0.4s ease;
   z-index: 2;
 }
 
 #menu-toggle:checked ~ .menu {
-  left: 0; /* ← 開いたときは左0へ */
+  right: 0; /* 開いたときは右0へ */
 }
 
 .menu ul {
@@ -311,9 +316,31 @@
   color: #fffefe;
 }
 
+ .header {
+  background-color: black;
+  opacity: 1;
+  padding: 1rem;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: xx-large;
+  position: relative;
+  z-index: 999; /* ヘッダーを前面に表示 */
+}
+
+  .stickyHeader {
+  position: sticky;
+  top: 0;
+}
+  .scroller {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
   </style>
 </head>
 <body>
+<header class="header stickyHeader">
+  <h1>NIWA VB Log</h1>
 <div class="menu-wrapper">
   <input type="checkbox" id="menu-toggle" hidden>
 
@@ -334,6 +361,7 @@
     </ul>
   </nav>
 </div>
+</header>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
     crossorigin="anonymous"></script>
@@ -354,8 +382,30 @@
   </div>
 
   <div class="tournament" id = "tournament">
-    <h1><font color="white">直近の大会情報</font></h1>
-    <a href="images/トーナメント.jpg" target="_blank"><img src="images/トーナメント.jpg" width="300" alt="トーナメント" border="0"></a>
+    <center><h1 class = "scroller"><font color="white">直近の大会</font></h1></center>
+    <div class="slide-items">
+      <div class="tournament-item"><a href="images/7月.jpg" target="_blank"><img src="images/7月.jpg" width="300" alt="トーナメント" border="0"></a></div>
+      <div class="tournament-item"><a href="images/10月.jpg" target="_blank"><img src="images/10月.jpg" width="300" alt="10月大会" border="0"></a></div>
+      <div class="tournament-item"><a href="images/7月.jpg" target="_blank"><img src="images/7月.jpg" width="300" alt="トーナメント" border="0"></a></div>
+      <div class="tournament-item"><a href="images/10月.jpg" target="_blank"><img src="images/10月.jpg" width="300" alt="10月大会" border="0"></a></div>
+    </div>
+
+
+
+
+
+
+
+
+    <!-- <div id = "tornament-g">
+      <h1><font color="white">直近の大会</font></h1>
+      <a href="images/7月.jpg" target="_blank"><img src="images/7月.jpg" width="300" alt="トーナメント" border="0"></a>
+    </div>
+
+    <div id = "tornament-g">
+      <h1><font color="white">次の大会</font></h1>
+      <a href="images/10月.jpg" target="_blank"><img src="images/10月.jpg" width="300" alt="10月大会" border="0"></a>
+    </div> -->
   </div>
 
   <center><h1>PICK UP</h1></center>
