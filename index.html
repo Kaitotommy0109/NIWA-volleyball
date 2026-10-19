@@ -1,120 +1,542 @@
 <!DOCTYPE html>
-<html lang="ja">
-    <head>
-        <!-- 1. スマホで正しく表示させるための必須タグ -->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login</title>
-        <style>
-            /* 全体の余白リセットとフォント指定 */
-            * {
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0;
-            }
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NIWA VB Log</title>
 
-            body {
-                display: flex;
-                flex-direction: column; 
-                align-items: center;     /* 左右中央 */
-                justify-content: center;/* 上下中央 */
-                min-height: 100vh;
-                background-color: #f5f5f5; /* 背景に少し色をつけるとカードが見やすい */
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-                padding: 20px; /* スマホで画面端にくっつきすぎないように余白を確保 */
-            }
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 
-            #header {
-                text-align: center;
-                margin-bottom: 24px;
-            }
+  <!-- GSAP本体とScrollTriggerの読み込み -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+ 
+  
+  
 
-            #header h1 {
-                font-size: 1.5rem; /* スマホで見やすい大きさに調整 */
-                color: #333;
-            }
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: white;
+      font-family: sans-serif;
+    }
+    img, video, iframe { max-width: 100%; }
 
-            /* 2. 幅を可変にして画面からはみ出さないようにする */
-            form {
-                width: 100%;
-                max-width: 400px; /* PCなど大きい画面での最大幅 */
-                padding: 28px 20px;
-                background-color: #ffffff;
-                border-radius: 12px; /* 角丸をつけるとスマホアプリっぽくなります */
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            }
+    .top-banner {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
 
-            form h2 {
-                margin-bottom: 20px;
-                text-align: center;
-                font-size: 1.3rem;
-                color: #333;
-            }
+    .video-wrap {
+      text-align: center;
+      padding: 20px;
+      width: min(100%, 900px);
+      margin: 0 auto;
+    }
 
-            /* 3 & 4. タップしやすく、ズームされないように調整 */
-            input {
-                width: 100%;
-                margin-bottom: 16px;
-                padding: 12px 14px;
-                font-size: 16px; /* iPhoneで自動ズームしないように16px以上 */
-                border: 1px solid #ccc;
-                border-radius: 6px;
-                outline: none;
-            }
+    .video-wrap video {
+      width: min(100%, 800px);
+      height: auto;
+      display: inline-block;
+    }
 
-            input:focus {
-                border-color: #007bff; /* 入力中の線を分かりやすく */
-            }
+    .player {
+      width: 100%;
+      min-height: 100px;
+      background-color: gray;
+      text-align: center;
+      padding: 12px;
+      opacity: 1;
+    }
 
-            /* 5. 押しやすいボタンデザイン */
-            button {
-                width: 100%;
-                padding: 12px;
-                font-size: 16px;
-                font-weight: bold;
-                color: #fff;
-                background-color: #007bff;
-                border: none;
-                border-radius: 6px;
-                cursor: pointer;
-            }
 
-            button:active {
-                background-color: #0056b3; /* タップした時に色が変化 */
-            }
+    .player h1 {
+      margin: 0;
+      font-size: clamp(1.25rem, 2.5vw, 2rem);
+      color: white;
+      opacity: 0;
+    }
 
-            img {
-                max-width: 100%;
-                height: auto;
-            }
-        </style>
-    </head>
-    <body>
-        <div id="header">
-            <h1>NIWA Volleyball Club</h1>
-        </div>
-        <div id="input">
-            <form id="loginForm">
-                <h2>Login</h2>
-                <input type="password" placeholder="Password" required id="password">
-                <button type="submit">ログイン</button>
-            </form>
-        </div>
-        <div id="photo">
-            <img src="club/images/メンバー.jpg" alt="">
-        </div>
+    .calendar {
+      width: 100%;
+      background-color: #87cefa;
+      text-align: center;
+      padding: 16px 12px;
+      opacity: 1;
+    }
 
-        <script>
-            document.getElementById('loginForm').addEventListener('submit', async function (event) {
-                event.preventDefault();
-                const password = document.getElementById('password').value;
-                const correctPassword = '123abc';
-                if (password === correctPassword) {
-                    sessionStorage.setItem('isLogged', 'true');
-                    window.location.href = 'club/main.html';
-                } else {
-                    alert('パスワードが違います。');
-                }
-            });
-        </script>
-    </body>
+    .calendar iframe {
+      width: min(100%, 800px);
+      height: clamp(420px, 60vh, 600px);
+      max-width: 100%;
+      border: 0;
+    }
+
+    .tournament {
+      width: 100%;
+      background-color: #99dfbe;
+      text-align: center;
+      padding: 16px 12px;
+      display: block;
+    }
+
+    .tournament img {
+      width: min(100%, 280px);
+      height: auto;
+      display: flex;
+      margin: 0 auto;
+    }
+
+    .tournament-g {
+      display: flex;
+    }
+    .slide-items {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .slide-items .slick-slide {
+      padding: 0 8px;
+    }
+
+    .slide-items a {
+      display: block;
+    }
+
+    .slide-items img {
+      width: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 8px;
+    }
+
+   
+
+    .slick-prev:before,
+    .slick-next:before {
+      color: black;
+    }
+
+    .slick-dots li button:before {
+      font-size: 18px;
+      top: 6px;
+    }
+
+    .wrapper {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+      padding: 0 12px;
+    }
+
+    .item {
+      width: 100%;
+      opacity: 0;
+    }
+
+    .item img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    a {
+      color: #000000;
+      text-decoration: none;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    @media (max-width: 768px) {
+      .wrapper {
+        grid-template-columns: 1fr;
+      }
+    }
+
+      .slide-items {
+        max-width: 100%;
+      }
+
+      .calendar iframe {
+        height: 420px;
+      }
+    
+      #feature .grid {
+    display: grid;
+    gap: 26px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
+    #feature .grid .item {
+      transition: all  0.3s ease;
+      box-shadow: 0 0 8px 4px #ccc;
+    }
+    #feature .grid img {
+      vertical-align: top;
+    }
+    #feature .grid .item-content {
+      padding: 30px;
+    }
+    #feature .grid .item-cat {
+      font-size: 0.75rem;
+      margin-bottom: 20px;
+    }
+    #feature .grid .item-text {
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    #feature .grid .item-date {
+      font-size: 0.75rem;
+      text-align: right;
+    }
+
+
+    .header {
+  background-color: #d6d6d6;
+  opacity: .7;
+  padding: 1rem;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: xx-large
+}
+
+  .stickyHeader {
+  position: sticky;
+  top: 0;
+}
+  .scroller {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+  .menu-wrapper {
+  position: relative;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 2.0rem;
+  color: #ff8800;
+}
+
+.menu-icon {
+  width: 40px;
+  height: 30px;
+  position: fixed; /* 固定位置 */
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  z-index: 3;
+  display: inline-block;
+}
+
+.menu-icon span {
+  display: block;
+  height: 4px;
+  margin: 6px 0;
+  background: #ff8800;
+  border-radius: 2px;
+  transition: 0.4s;
+}
+
+/* ハンバーガーがXに変形 */
+#menu-toggle:checked + .menu-icon span:nth-child(1) {
+  transform: translateY(10px) rotate(45deg);
+}
+#menu-toggle:checked + .menu-icon span:nth-child(2) {
+  opacity: 0;
+}
+#menu-toggle:checked + .menu-icon span:nth-child(3) {
+  transform: translateY(-10px) rotate(-45deg);
+}
+
+/* オーバーレイ背景 */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.4s;
+  z-index: 1;
+}
+
+#menu-toggle:checked ~ .overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* メニュー本体（右から出す） */
+.menu {
+  position: fixed;
+  top: 0;
+  right: -250px; /* 初期位置を右へ */
+  width: 250px;
+  height: 100%;
+  background: #fff;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+  transition: right 0.4s ease;
+  z-index: 2;
+}
+
+#menu-toggle:checked ~ .menu {
+  right: 0; /* 開いたときは右0へ */
+}
+
+.menu ul {
+  list-style: none;
+  padding: 60px 20px;
+}
+
+.menu li {
+  margin: 20px 0;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #333;
+  font-size: 1.2rem;
+  transition: color 0.3s;
+}
+
+.menu a:hover {
+  color: #007bff;
+}
+.label {
+  color: #fffefe;
+}
+
+ .header {
+  background-color: black;
+  opacity: 1;
+  padding: 1rem;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: xx-large;
+  position: relative;
+  z-index: 999; /* ヘッダーを前面に表示 */
+}
+
+  .stickyHeader {
+  position: sticky;
+  top: 0;
+}
+  .scroller {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+  </style>
+</head>
+<body>
+<header class="header stickyHeader">
+  <h1>NIWA VB Log</h1>
+<div class="menu-wrapper">
+  <input type="checkbox" id="menu-toggle" hidden>
+
+  <label class="menu-icon" for="menu-toggle">
+    <span></span>
+    <span></span>
+    <span></span>
+  </label>
+  
+  <div class="overlay"></div>
+  
+  <nav class="menu">
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#calendar">Calendar</a></li>
+      <li><a href="#tournament">Tournament</a></li>
+      <li><a href="#game">Game</a></li>
+    </ul>
+  </nav>
+</div>
+</header>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
+
+  <img src="club/images/サムネ.png" alt="サムネ" class="top-banner" id = "home">
+
+  <div class="video-wrap">
+    <video src="club/videos/2026年度男子バレーボール部部活動紹介動画.mp4" controls autoplay muted loop></video>
+  </div>
+
+  <div class="player">  
+    <h1 class = scroller>部員人数<br>2年21人、1年10人、マネージャー2人</h1>
+  </div>
+
+  <div class="calendar" id = "calendar">
+    <h1 class = "scroller"><font color="white">予定表</font></h1>
+    <iframe class = "scroller" src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Asia%2FTokyo&showPrint=0&src=bml3YS52b2xsZXliYWxsQGdtYWlsLmNvbQ&src=amEuamFwYW5lc2UjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23039be5&color=%230b8043&mode=AGENDA" scrolling="no"></iframe>
+  </div>
+
+  <div class="tournament" id = "tournament">
+    <center><h1 class = "scroller"><font color="white">直近の大会</font></h1></center>
+    <div class="slide-items">
+      <div class="tournament-item"><a href="club/images/7月.jpg" target="_blank"><img src="club/images/7月.jpg" width="300" alt="トーナメント" border="0"></a></div>
+      <div class="tournament-item"><a href="club/images/10月.jpg" target="_blank"><img src="club/images/10月.jpg" width="300" alt="10月大会" border="0"></a></div>
+      <div class="tournament-item"><a href="club/images/7月.jpg" target="_blank"><img src="club/images/7月.jpg" width="300" alt="トーナメント" border="0"></a></div>
+      <div class="tournament-item"><a href="club/images/10月.jpg" target="_blank"><img src="club/images/10月.jpg" width="300" alt="10月大会" border="0"></a></div>
+    </div>
+
+
+
+
+
+
+
+
+    <!-- <div id = "tornament-g">
+      <h1><font color="white">直近の大会</font></h1>
+      <a href="images/7月.jpg" target="_blank"><img src="images/7月.jpg" width="300" alt="トーナメント" border="0"></a>
+    </div>
+
+    <div id = "tornament-g">
+      <h1><font color="white">次の大会</font></h1>
+      <a href="images/10月.jpg" target="_blank"><img src="images/10月.jpg" width="300" alt="10月大会" border="0"></a>
+    </div> -->
+  </div>
+
+  <center><h1>PICK UP</h1></center>
+  <div class="slide-items">
+    <div><a href="https://www.youtube.com/watch?v=W4cXkI7n_d8&list=PLwXThI6tvcnLffP-bD1CnrL-vTiAOrzWF"><img src="club/images/一宮興道.jpg" alt="一宮興道"></a></div>
+    <div><a href="https://www.youtube.com/watch?v=MyMBjWp_v6o&list=PLwXThI6tvcnKhSuwk_eVFrW4xeEm8WQK1"><img src="club/images/一宮西.jpg" alt="一宮西"></a></div>
+    <div><a href="https://www.youtube.com/watch?v=VS6RdAIX_I8&list=PLwXThI6tvcnLBIg2cUr9OBA3iUbDmRxSD"><img src="club/images/一宮南.jpg" alt="一宮南"></a></div>
+    <div><a href="https://www.youtube.com/watch?v=W4cXkI7n_d8&list=PLwXThI6tvcnLffP-bD1CnrL-vTiAOrzWF"><img src="club/images/一宮興道.jpg" alt="一宮興道"></a></div>
+    <div><a href="https://www.youtube.com/watch?v=MyMBjWp_v6o&list=PLwXThI6tvcnKhSuwk_eVFrW4xeEm8WQK1"><img src="club/images/一宮西.jpg" alt="一宮西"></a></div>
+    <div><a href="https://www.youtube.com/watch?v=VS6RdAIX_I8&list=PLwXThI6tvcnLBIg2cUr9OBA3iUbDmRxSD"><img src="club/images/一宮南.jpg" alt="一宮南"></a></div>
+  </div>
+
+  <section id="NEW ARRIVAL">
+    <h1><center>動画一覧</center></h1>
+    <div class="wrapper">
+  <div class="item scroller">
+   <img src="club/images/美和.png"id="video-1" alt="YouTubeを見る" style="cursor: pointer;">
+    <div class="item-content">
+      <p class="item-cat">美和練習試合</p>
+      <p class="item-text">点差をつけられて負けた</p>
+      <p class="item-text">丹羽-美和 0 - 2</p>
+      <p class="item-date">2026. 08. 08</p>
+    </div>
+  </div>
+
+  <div class="item scroller" id = "game">
+    <img src="club/images/五条.png"id="video-2" alt="YouTubeを見る" style="cursor: pointer;">
+
+    <div class="item-content">
+      <p class="item-cat">五条大会</p>
+      <p class="item-text">点差をつけられて負けた</p>
+      <p class="item-text">丹羽-五条 0 - 2</p>
+      <p class="item-date">2026. 07. 18</p>
+    </div>
+  </div>
+  <div class="item scroller">
+    <img src="club/images/尾北.png"id="video-3" alt="YouTubeを見る" style="cursor: pointer;">
+    <div class="item-content">
+      <p class="item-cat">尾北練習試合</p>
+      <p class="item-text">尾北と練習試合を行った</p>
+      <p class="item-date">2026. 07. 11</p>
+    </div>
+  </div>
+  <div class="item scroller">
+    <img class="fadein" src="club/images/feature3.jpg" alt style="opacity: 1; transform: translateY(0px);">
+    <div class="item-content">
+      <p class="item-cat">category</p>
+      <p class="item-text">テキストテキストテキストテキストテキストテキストテキストテキスト</p>
+      <p class="item-date">XXXX. XX. XX</p>
+    </div>
+  </div>
+  </section>
+
+ 
+  <script>
+    $(window).on('load', function () {
+      $('.slide-items').not('.slick-initialized').slick({
+        autoplay: true,
+        autoplaySpeed: 3000,
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        infinite: true,
+        arrows: true,
+        dots: true,
+        pauseOnHover: true,
+        responsive: [
+          {
+            breakpoint: 768,
+            settings: {
+              slidesToShow: 1,
+              arrows: false,
+              dots: true
+            }
+          }
+        ]
+      });
+    });
+  </script>
+
+  <script>
+    ScrollTrigger.batch(".scroller", {
+    onEnter: (elements, triggers) => {
+      gsap.to(elements, { opacity: 1, stagger: 0.15 });
+      console.log(elements.length, "elements entered");
+    },
+  
+    start: "top center",
+    markers: false
+        // デバッグ用のマーカーを表示する場合は有効にする
+  });
+  </script>
+
+  <script>
+// 1. 画像とリンク先のデータを「配列」で定義
+const videoList = [
+  {
+    id: "video-1",
+    url: "https://www.youtube.com/playlist?list=PLJAwkEamMVyA",
+    password: "123" // パスワードが画像ごとに異なる場合
+  },
+  {
+    id: "video-2",
+    url: "https://www.youtube.com/playlist?list=PLdTqnyWJUhdQ",
+    password: "123" // 全共通にする場合は共通の変数で管理してもOK
+  },
+  {
+    id: "video-3",
+    url: "https://www.youtube.com/playlist?list=PLYtlY4PvKJV8",
+    password: "123"
+  }
+];
+
+// 2. 配列をループで回して一括設定
+videoList.forEach(item => {
+  const imgElement = document.getElementById(item.id);
+
+  if (imgElement) {
+    imgElement.addEventListener('click', () => {
+      const userInput = prompt("パスワードを入力してください:");
+
+      if (userInput === null) return; // キャンセル時
+
+      if (userInput === item.password) {
+        window.location.href = item.url;
+      } else {
+        alert("パスワードが違います。");
+      }
+    });
+  }
+});
+  </script>
+</body>
 </html>
