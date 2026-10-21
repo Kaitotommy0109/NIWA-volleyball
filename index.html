@@ -421,7 +421,13 @@
 
   <section id="NEW ARRIVAL">
     <h1><center>動画一覧</center></h1>
-    <div class="wrapper">
+    <div id="login-area">
+  <input type="password" id="password-input" placeholder="パスワードを入力">
+  <button id="login-button">ロック解除</button>
+  <p id="error-message" style="color: red;"></p>
+</div>
+    <div class="wrapper" id="video-area" style="display: none;">
+
   <div class="item scroller">
    <img src="club/images/美和.png"id="video-1" alt="YouTubeを見る" style="cursor: pointer;">
     <div class="item-content">
@@ -500,42 +506,63 @@
   </script>
 
   <script>
-// 1. 画像とリンク先のデータを「配列」で定義
+ const PASSWORD = "123";
+
 const videoList = [
-  {
-    id: "video-1",
-    url: "https://www.youtube.com/playlist?list=PLJAwkEamMVyA",
-    password: "123" // パスワードが画像ごとに異なる場合
-  },
-  {
-    id: "video-2",
-    url: "https://www.youtube.com/playlist?list=PLdTqnyWJUhdQ",
-    password: "123" // 全共通にする場合は共通の変数で管理してもOK
-  },
-  {
-    id: "video-3",
-    url: "https://www.youtube.com/playlist?list=PLYtlY4PvKJV8",
-    password: "123"
-  }
+  { id: "video-1", url: "https://www.youtube.com/playlist?list=PLJAwkEamMVyA" },
+  { id: "video-2", url: "https://www.youtube.com/playlist?list=PLdTqnyWJUhdQ" },
+  { id: "video-3", url: "https://www.youtube.com/playlist?list=PLYtlY4PvKJV8" }
 ];
 
-// 2. 配列をループで回して一括設定
-videoList.forEach(item => {
-  const imgElement = document.getElementById(item.id);
+document.addEventListener('DOMContentLoaded', () => {
+  const loginArea = document.getElementById('login-area');
+  const videoArea = document.getElementById('video-area');
+  const passwordInput = document.getElementById('password-input');
+  const loginButton = document.getElementById('login-button');
+  const errorMessage = document.getElementById('error-message');
 
-  if (imgElement) {
-    imgElement.addEventListener('click', () => {
-      const userInput = prompt("パスワードを入力してください:");
-
-      if (userInput === null) return; // キャンセル時
-
-      if (userInput === item.password) {
-        window.location.href = item.url;
-      } else {
-        alert("パスワードが違います。");
-      }
-    });
+  // 動画エリアを表示する関数
+  function unlock() {
+    loginArea.style.display = 'none';
+    videoArea.style.display = 'grid';
+    videoArea.style.gridTemplateColumns = 'repeat(3, minmax(0, 1fr))';
   }
+
+  // すでに認証済み(同じタブ内)なら最初から表示
+  try {
+    if (sessionStorage.getItem('authenticated') === 'true') {
+      unlock();
+    }
+  } catch (e) {}
+
+  // パスワードチェック
+  function checkPassword() {
+    if (passwordInput.value === PASSWORD) {
+      try {
+        sessionStorage.setItem('authenticated', 'true');
+      } catch (e) {}
+      unlock();
+    } else {
+      errorMessage.textContent = "パスワードが違います。";
+      passwordInput.value = "";
+    }
+  }
+
+  loginButton.addEventListener('click', checkPassword);
+
+  // Enterキーでも送信できるように
+  passwordInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') checkPassword();
+  });
+
+  // 各画像のクリックでリンク先へ(パスワード確認は不要)
+  videoList.forEach(item => {
+    const imgElement = document.getElementById(item.id);
+    if (!imgElement) return;
+    imgElement.addEventListener('click', () => {
+      window.open(item.url, '_blank');
+    });
+  });
 });
   </script>
 </body>
