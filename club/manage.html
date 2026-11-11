@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Manage Log</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <header>
+            <h1>Manage Log</h1>
+        </header>
+
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLScfycgKGqxYun-vnsfRe4ZpQRFsy2VuXQm_JDNi0R0188z7Ow/viewform?usp=dialog" target="_blank" rel="noopener">動画を登録する</a>
+
+        <div id="video-list"></div>
+
+<script>
+const GAS_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnR-Lh9_jqC1ZqFNv3eQT54J3a-tFg70VMbtoq-pwNbCgw0QEYak_Esl5zw_vhIZgFHnGu3jgED4Dg1SAPs7WpL6wUNzSvhGLvGKQjO00_Oh3AXuA4aoFXdbVljuCnT9hS4fT4Ft-WqOFcjzooF2VqU4hunepODbUSiXChWepSeclj6JzX7Ytdf9n9rdbuT5LvQqViJ_9dwQcxpVUKY9WbzCDmf_-v4zsGKlkjMdjC6ii7HZh6GWoZjdTRZuwmc7Vnt80sW8qjJx059a0j6QcD_rgLt7SQ&lib=MtQpjC6dBP7bDOO7i2feea9lWIEOf3u3N";
+
+function getYouTubeId(url) {
+  const m = String(url).match(/(?:v=|youtu\.be\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+
+fetch(GAS_URL)
+  .then(res => res.json())
+  .then(videos => {
+    const list = document.getElementById("video-list");
+    videos.forEach(v => {
+      const id = getYouTubeId(v.url);
+      if (!id) return;
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <a href="${v.url}" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/${id}/hqdefault.jpg" alt="">
+        </a>
+        <h3></h3><p class="score"></p><p class="date"></p>`;
+      // 入力内容はtextContentで入れる(悪意あるHTMLを無効化)
+      card.querySelector("h3").textContent = v.title;
+      card.querySelector(".score").textContent = v.score || "";
+      card.querySelector(".date").textContent = v.date;
+      list.appendChild(card);
+    });
+  })
+  .catch(err => console.error("読み込み失敗", err));
+</script>
