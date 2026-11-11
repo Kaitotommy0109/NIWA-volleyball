@@ -4,16 +4,25 @@
 
 // ★ Supabase の「Project URL」と「anon(publishable)キー」を貼る
 // このキーは公開されても大丈夫な設計です。守っているのは setup.sql の RLS です。
-const SUPABASE_URL = "https://isyxhicbwknnythfvbgc.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_7ThsJ8z0l9M9u0nFsDWAOA_JaEusvbw";
+const SUPABASE_URL = "https://xxxxxxxxxxxx.supabase.co";
+const SUPABASE_ANON_KEY = "ここにanonキー";
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const FALLBACK_IMG = "club/images/feature3.jpg";
 
 const loginArea = document.getElementById("login-area");
 const userBar   = document.getElementById("user-bar");
 const postArea  = document.getElementById("post-area");
 const videoArea = document.getElementById("video-area");
+
+// 絞り込みバーは app.js が自分で作って、動画一覧の直前に置く(index.html の変更は不要)
+const filterArea = document.createElement("div");
+filterArea.id = "filter-area";
+videoArea.before(filterArea);
+
+let allVideos = [];                          // 取得した動画すべて
+const filters = { q: "", month: "", mine: false };
+let monthSelect = null;                      // 「月」の選択欄
+let countEl = null;                          // 「○件」の表示
 
 let me = null;     // ログイン中のユーザー
 let myClub = null; // { club_id, role, clubs: { name } }
@@ -32,7 +41,7 @@ function el(tag, attrs = {}, ...kids) {
 }
 
 function getYouTubeId(url) {
-  const m = String(url).match(/(?:v=|youtu\.be\/)([\w-]{11})/);
+  const m = String(url).match(/(?:v=|youtu\.be\/|\/shorts\/|\/embed\/)([\w-]{11})/);
   return m ? m[1] : null;
 }
 
@@ -43,6 +52,7 @@ function isYouTubeUrl(url) {
 function hideAll() {
   loginArea.replaceChildren();
   userBar.replaceChildren();
+  filterArea.replaceChildren();
   postArea.replaceChildren();
   videoArea.replaceChildren();
   videoArea.style.display = "none";
@@ -151,6 +161,23 @@ function showMain() {
     el("div", { style: "display:flex;flex-direction:column;gap:8px;" }, title, url, comment, score, date, submit, msg)
   ));
 
+  // 絞り込みバー
+  filters.q = ""; filters.month = ""; filters.mine = false;
+  const q = el("input", { type: "search", class: "form-control", placeholder: "キーワードで探す(相手校・コメントなど。スペースで複数指定)" });
+  monthSelect = el("select", { class: "form-select", style: "max-width:180px;" }, el("option", { value: "" }, "すべての月"));
+  const mine = el("input", { type: "checkbox", id: "mine-only", class: "form-check-input" });
+  countEl = el("p", { style: "margin:0;font-size:0.85rem;color:#666;text-align:center;" });
+
+  q.addEventListener("input", () => { filters.q = q.value; render(); });
+  monthSelect.addEventListener("change", () => { filters.month = monthSelect.value; render(); });
+  mine.addEventListener("change", () => { filters.mine = mine.checked; render(); });
+
+  filterArea.append(el("div", { style: "max-width:900px;margin:16px auto 8px;padding:0 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;" },
+    el("div", { style: "flex:1 1 260px;" }, q),
+    monthSelect,
+    el("div", { class: "form-check", style: "margin:0;" }, mine, el("label", { for: "mine-only", class: "form-check-label" }, "自分の投稿だけ"))
+  ), countEl);
+
   videoArea.style.display = "grid";
   loadVideos();
 }
@@ -160,13 +187,20 @@ function createCard(v) {
   const id = getYouTubeId(v.url);
   const card = el("div", { class: "item", style: "opacity:1;" }); // .item はCSSで opacity:0 のため上書き
 
-  const img = el("img", {
-    src: id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : FALLBACK_IMG,
-    alt: "YouTubeを見る",
-    style: "cursor:pointer;"
-  });
-  img.addEventListener("click", () => window.open(v.url, "_blank", "noopener"));
-  card.append(img);
+  const openUrl = () => window.open(v.url, "_blank", "noopener");
+  const placeholder = () => {
+    const d = el("div", { style: "aspect-ratio:16/9;background:#333;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;" }, "▶ YouTubeで見る");
+    d.addEventListener("click", openUrl);
+    return d;
+  };
+  if (id) {
+    const img = el("img", { src: `https://img.youtube.com/vi/${id}/hqdefault.jpg`, alt: "YouTubeを見る", style: "cursor:pointer;" });
+    img.addEventListener("click", openUrl);
+    img.addEventListener("error", () => img.replaceWith(placeholder()));
+    card.append(img);
+  } else {
+    card.append(placeholder());
+  }
 
   const content = el("div", { class: "item-content" });
   const add = (cls, text) => { if (text) content.append(el("p", { class: cls }, text)); };
@@ -200,10 +234,48 @@ async function loadVideos() {
     .order("played_on", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });
 
-  videoArea.replaceChildren();
   if (error) { videoArea.textContent = "動画を読み込めませんでした。"; return; }
-  if (!data.length) { videoArea.textContent = "まだ動画がありません。上のフォームから最初の1本を投稿しましょう。"; return; }
-  data.forEach(v => videoArea.append(createCard(v)));
+  allVideos = data;
+  updateMonthOptions();
+  render();
+}
+
+// 試合日がある月だけを、選択肢に出す
+function updateMonthOptions() {
+  const months = [...new Set(allVideos.map(v => (v.played_on || "").slice(0, 7)).filter(Boolean))].sort().reverse();
+  monthSelect.replaceChildren(
+    el("option", { value: "" }, "すべての月"),
+    ...months.map(m => el("option", { value: m }, m.replace("-", "年") + "月"))
+  );
+  monthSelect.value = months.includes(filters.month) ? filters.month : "";
+  filters.month = monthSelect.value;
+}
+
+// 条件に合うか(キーワードは、スペース区切りで「すべて含む」)
+function matches(v) {
+  const words = filters.q.trim().toLowerCase().split(/[\s\u3000]+/).filter(Boolean);
+  if (words.length) {
+    const text = [v.title, v.comment, v.score].filter(Boolean).join(" ").toLowerCase();
+    if (!words.every(w => text.includes(w))) return false;
+  }
+  if (filters.month && !(v.played_on || "").startsWith(filters.month)) return false;
+  if (filters.mine && v.created_by !== me.id) return false;
+  return true;
+}
+
+function render() {
+  videoArea.replaceChildren();
+  if (!allVideos.length) {
+    countEl.textContent = "";
+    videoArea.textContent = "まだ動画がありません。上のフォームから最初の1本を投稿しましょう。";
+    return;
+  }
+  const list = allVideos.filter(matches);
+  countEl.textContent = list.length === allVideos.length
+    ? `${allVideos.length}件`
+    : `${allVideos.length}件中 ${list.length}件を表示`;
+  if (!list.length) { videoArea.textContent = "条件に合う動画がありません。"; return; }
+  list.forEach(v => videoArea.append(createCard(v)));
 }
 
 // ---------- 起動 ----------
