@@ -4,8 +4,8 @@
 
 // ★ Supabase の「Project URL」と「anon(publishable)キー」を貼る
 // このキーは公開されても大丈夫な設計です。守っているのは setup.sql の RLS です。
-const SUPABASE_URL = "https://xxxxxxxxxxxx.supabase.co";
-const SUPABASE_ANON_KEY = "ここにanonキー";
+const SUPABASE_URL = "https://isyxhicbwknnythfvbgc.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_7ThsJ8z0l9M9u0nFsDWAOA_JaEusvbw";
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
