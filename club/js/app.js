@@ -9,6 +9,25 @@ const SUPABASE_ANON_KEY = "sb_publishable_7ThsJ8z0l9M9u0nFsDWAOA_JaEusvbw";
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// 「動画を投稿する」「グループを管理」の見出しを、ボタンの見た目にする
+const foldStyle = document.createElement("style");
+foldStyle.textContent = `
+  .fold { max-width: 600px; margin: 12px auto; padding: 0 12px; }
+  .fold > summary { list-style: none; display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 11px 16px; font-size: 1rem; font-weight: bold; border-radius: 999px; cursor: pointer; user-select: none; }
+  .fold > summary::-webkit-details-marker { display: none; }
+  .fold > summary::after { content: "▼"; font-size: 0.7em; }
+  .fold[open] > summary::after { content: "▲"; }
+  .fold > summary:focus-visible { outline: 3px solid #111; outline-offset: 2px; }
+  .fold-primary > summary { background: #ff8800; color: #111; }
+  .fold-primary > summary:hover { background: #ffa033; }
+  .fold-outline > summary { background: #fff; color: #8a4500; border: 2px solid #ff8800; padding: 9px 16px; }
+  .fold-outline > summary:hover { background: #fff4e5; }
+  .fold-body { padding-top: 12px; }
+  #post-area .fold { max-width: none; margin: 0; padding: 0; }
+`;
+document.head.append(foldStyle);
+
 const loginArea = document.getElementById("login-area");
 const userBar   = document.getElementById("user-bar");
 const postArea  = document.getElementById("post-area");
@@ -162,9 +181,9 @@ function showMain() {
     }
   }, "動画を投稿する");
 
-  postArea.append(el("details", {},
-    el("summary", { style: "cursor:pointer;margin-bottom:8px;" }, "動画を投稿する"),
-    el("div", { style: "display:flex;flex-direction:column;gap:8px;" }, title, url, comment, score, date, submit, msg)
+  postArea.append(el("details", { class: "fold fold-primary" },
+    el("summary", {}, "＋ 動画を投稿する"),
+    el("div", { class: "fold-body", style: "display:flex;flex-direction:column;gap:8px;" }, title, url, comment, score, date, submit, msg)
   ));
 
   // 絞り込みバー
@@ -187,8 +206,8 @@ function showMain() {
     folderSelect,
     el("div", { class: "form-check", style: "margin:0;" }, mine, el("label", { for: "mine-only", class: "form-check-label" }, "自分の投稿だけ"))
   ), countEl,
-  el("details", { style: "max-width:900px;margin:8px auto;padding:0 12px;" },
-    el("summary", { style: "cursor:pointer;" }, "グループを管理"), folderBox));
+  el("details", { class: "fold fold-outline" },
+    el("summary", {}, "グループを管理"), folderBox));
 
   videoArea.style.display = "grid";
   loadVideos();
