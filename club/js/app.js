@@ -20,9 +20,15 @@ filterArea.id = "filter-area";
 videoArea.before(filterArea);
 
 let allVideos = [];                          // 取得した動画すべて
-const filters = { q: "", month: "", mine: false };
+const filters = { q: "", month: "", folder: "", mine: false };
 let monthSelect = null;                      // 「月」の選択欄
 let countEl = null;                          // 「○件」の表示
+
+let allFolders = [];                         // グループ [{id, name, created_by}]
+const videoFolders = new Map();              // 動画id -> 入っているグループidの Set
+let openPanel = null;                        // 「グループに入れる」を開いている動画のid
+let folderSelect = null;                     // 「グループ」の選択欄
+let folderBox = null;                        // 「グループを管理」の中身
 
 let me = null;     // ログイン中のユーザー
 let myClub = null; // { club_id, role, clubs: { name } }
@@ -162,9 +168,12 @@ function showMain() {
   ));
 
   // 絞り込みバー
-  filters.q = ""; filters.month = ""; filters.mine = false;
+  filters.q = ""; filters.month = ""; filters.folder = ""; filters.mine = false;
   const q = el("input", { type: "search", class: "form-control", placeholder: "キーワードで探す(相手校・コメントなど。スペースで複数指定)" });
   monthSelect = el("select", { class: "form-select", style: "max-width:180px;" }, el("option", { value: "" }, "すべての月"));
+  folderSelect = el("select", { class: "form-select", style: "max-width:200px;" });
+  folderSelect.addEventListener("change", () => { filters.folder = folderSelect.value; render(); });
+  folderBox = el("div", { style: "display:flex;flex-direction:column;gap:8px;margin-top:8px;" });
   const mine = el("input", { type: "checkbox", id: "mine-only", class: "form-check-input" });
   countEl = el("p", { style: "margin:0;font-size:0.85rem;color:#666;text-align:center;" });
 
@@ -175,8 +184,11 @@ function showMain() {
   filterArea.append(el("div", { style: "max-width:900px;margin:16px auto 8px;padding:0 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;" },
     el("div", { style: "flex:1 1 260px;" }, q),
     monthSelect,
+    folderSelect,
     el("div", { class: "form-check", style: "margin:0;" }, mine, el("label", { for: "mine-only", class: "form-check-label" }, "自分の投稿だけ"))
-  ), countEl);
+  ), countEl,
+  el("details", { style: "max-width:900px;margin:8px auto;padding:0 12px;" },
+    el("summary", { style: "cursor:pointer;" }, "グループを管理"), folderBox));
 
   videoArea.style.display = "grid";
   loadVideos();
@@ -207,7 +219,22 @@ function createCard(v) {
   add("item-cat", v.title);
   add("item-text", v.comment);
   add("item-text", v.score);
+
+  // 入っているグループ(クリックすると、そのグループで絞り込み)
+  const chips = el("div", { style: "display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;" });
+  [...(videoFolders.get(v.id) || [])]
+    .map(fid => allFolders.find(f => f.id === fid)).filter(Boolean)
+    .forEach(f => chips.append(el("span", {
+      class: "badge bg-secondary", style: "cursor:pointer;",
+      onclick: () => { filters.folder = f.id; folderSelect.value = f.id; render(); }
+    }, f.name)));
+  content.append(chips);
   add("item-date", v.played_on);
+
+  content.append(el("button", {
+    class: "btn btn-sm btn-outline-primary", style: "margin-right:6px;",
+    onclick: () => { openPanel = openPanel === v.id ? null : v.id; render(); }
+  }, "グループに入れる"));
 
   // 削除ボタン:投稿した本人か管理者だけに表示(サーバー側でも同じ条件でチェックされます)
   if (v.created_by === me.id || myClub.role === "admin") {
@@ -222,22 +249,124 @@ function createCard(v) {
     }, "削除"));
   }
 
+  if (openPanel === v.id) content.append(buildFolderPanel(v));
+
   card.append(content);
   return card;
 }
 
 async function loadVideos() {
-  const { data, error } = await db
-    .from("videos")
-    .select("*")
-    .eq("club_id", myClub.club_id)
-    .order("played_on", { ascending: false, nullsFirst: false })
-    .order("created_at", { ascending: false });
+  const [vr, fr, lr] = await Promise.all([
+    db.from("videos").select("*").eq("club_id", myClub.club_id)
+      .order("played_on", { ascending: false, nullsFirst: false })
+      .order("created_at", { ascending: false }),
+    db.from("folders").select("*").eq("club_id", myClub.club_id).order("name"),
+    db.from("folder_videos").select("video_id, folder_id")
+  ]);
 
-  if (error) { videoArea.textContent = "動画を読み込めませんでした。"; return; }
-  allVideos = data;
+  if (vr.error) { videoArea.textContent = "動画を読み込めませんでした。"; return; }
+  allVideos = vr.data;
+
+  // グループ用のテーブルが未作成でも、動画は表示できるようにしておく
+  if (fr.error || lr.error) console.warn("グループを読み込めません(groups.sql を実行しましたか?)", fr.error || lr.error);
+  allFolders = fr.error ? [] : fr.data;
+  videoFolders.clear();
+  (lr.error ? [] : lr.data).forEach(l => {
+    if (!videoFolders.has(l.video_id)) videoFolders.set(l.video_id, new Set());
+    videoFolders.get(l.video_id).add(l.folder_id);
+  });
+
   updateMonthOptions();
+  updateFolderOptions();
+  renderFolderManager();
   render();
+}
+
+function updateFolderOptions() {
+  folderSelect.replaceChildren(
+    el("option", { value: "" }, "すべてのグループ"),
+    el("option", { value: "none" }, "グループなし"),
+    ...allFolders.map(f => el("option", { value: f.id }, f.name))
+  );
+  const ok = filters.folder === "" || filters.folder === "none" || allFolders.some(f => f.id === filters.folder);
+  folderSelect.value = ok ? filters.folder : "";
+  filters.folder = folderSelect.value;
+}
+
+// 「グループを管理」:作る・名前を変える・削除する
+function renderFolderManager() {
+  const input = el("input", { type: "text", class: "form-control", maxlength: "40", placeholder: "新しいグループ名(例:秋季大会、サーブ練習)" });
+  const msg = el("p", { style: "margin:0;color:red;" });
+  const addBtn = el("button", {
+    class: "btn btn-warning",
+    onclick: async () => {
+      msg.textContent = "";
+      const name = input.value.trim();
+      if (!name) return;
+      const { error } = await db.from("folders").insert({ club_id: myClub.club_id, name, created_by: me.id });
+      if (error) msg.textContent = error.code === "23505" ? "同じ名前のグループがあります。" : "作成できませんでした:" + error.message;
+      else loadVideos();
+    }
+  }, "作成");
+
+  const list = el("div", { style: "display:flex;flex-direction:column;gap:6px;" });
+  allFolders.forEach(f => {
+    const n = allVideos.filter(v => (videoFolders.get(v.id) || new Set()).has(f.id)).length;
+    const row = el("div", { style: "display:flex;gap:6px;align-items:center;" },
+      el("span", { style: "flex:1;" }, `${f.name}(${n}本)`),
+      el("button", {
+        class: "btn btn-sm btn-outline-secondary",
+        onclick: async () => {
+          const name = (prompt("新しいグループ名", f.name) || "").trim();
+          if (!name || name === f.name) return;
+          const { error } = await db.from("folders").update({ name }).eq("id", f.id);
+          if (error) alert(error.code === "23505" ? "同じ名前のグループがあります。" : "変更できませんでした:" + error.message);
+          else loadVideos();
+        }
+      }, "名前を変える"));
+    if (f.created_by === me.id || myClub.role === "admin") {
+      row.append(el("button", {
+        class: "btn btn-sm btn-outline-danger",
+        onclick: async () => {
+          if (!confirm(`グループ「${f.name}」を削除しますか?(中の動画は消えません)`)) return;
+          const { error } = await db.from("folders").delete().eq("id", f.id);
+          if (error) alert("削除できませんでした:" + error.message);
+          else loadVideos();
+        }
+      }, "削除"));
+    }
+    list.append(row);
+  });
+
+  folderBox.replaceChildren(el("div", { style: "display:flex;gap:6px;" }, input, addBtn), msg, list);
+}
+
+// カードの「グループに入れる」を押したときに出る、チェックボックスの一覧
+function buildFolderPanel(v) {
+  const box = el("div", { style: "margin-top:8px;padding:8px;border:1px solid #ddd;border-radius:6px;display:flex;flex-direction:column;gap:4px;" });
+  if (!allFolders.length) {
+    box.append("先に「グループを管理」でグループを作ってください。");
+    return box;
+  }
+  allFolders.forEach(f => {
+    const cb = el("input", { type: "checkbox", class: "form-check-input" });
+    cb.checked = (videoFolders.get(v.id) || new Set()).has(f.id);
+    cb.addEventListener("change", async () => {
+      const want = cb.checked;
+      cb.disabled = true;
+      const { error } = want
+        ? await db.from("folder_videos").insert({ folder_id: f.id, video_id: v.id })
+        : await db.from("folder_videos").delete().eq("folder_id", f.id).eq("video_id", v.id);
+      if (error) { alert("変更できませんでした:" + error.message); cb.checked = !want; cb.disabled = false; return; }
+      const set = videoFolders.get(v.id) || new Set();
+      if (want) set.add(f.id); else set.delete(f.id);
+      videoFolders.set(v.id, set);
+      renderFolderManager();
+      render();
+    });
+    box.append(el("label", { style: "display:flex;gap:6px;align-items:center;margin:0;" }, cb, f.name));
+  });
+  return box;
 }
 
 // 試合日がある月だけを、選択肢に出す
@@ -259,6 +388,10 @@ function matches(v) {
     if (!words.every(w => text.includes(w))) return false;
   }
   if (filters.month && !(v.played_on || "").startsWith(filters.month)) return false;
+  if (filters.folder) {
+    const ids = videoFolders.get(v.id) || new Set();
+    if (filters.folder === "none" ? ids.size > 0 : !ids.has(filters.folder)) return false;
+  }
   if (filters.mine && v.created_by !== me.id) return false;
   return true;
 }
