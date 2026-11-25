@@ -207,7 +207,7 @@ function showMain() {
     el("div", { class: "form-check", style: "margin:0;" }, mine, el("label", { for: "mine-only", class: "form-check-label" }, "自分の投稿だけ"))
   ), countEl,
   el("details", { class: "fold fold-outline" },
-    el("summary", {}, "グループを管理"), folderBox));
+    el("summary", {}, "📁グループを管理"), folderBox));
 
   videoArea.style.display = "grid";
   loadVideos();
